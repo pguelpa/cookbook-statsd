@@ -17,7 +17,6 @@
 # limitations under the License.
 #
 
-include_recipe "build-essential"
 include_recipe "git"
 
 package "nodejs"
@@ -29,29 +28,17 @@ user node[:statsd][:user] do
   action :create
 end
 
-git "/tmp/statsd" do
+git node[:statsd][:base_dir] do
   repository node[:statsd][:repo_url]
   reference node[:statsd][:branch]
   action :checkout
 end
 
-execute "checkout statsd" do
-  command "git clone git@github.com:etsy/statsd.git"
-  creates "/tmp/statsd"
-  cwd "/tmp"
-end
-
-package "debhelper"
-
-execute "build debian package" do
-  command "dpkg-buildpackage -us -uc"
-  creates "/tmp/statsd_*_all.deb"
-  cwd "/tmp/statsd"
-end
-
-dpkg_package "statsd" do
-  action :install
-  source "/tmp/statsd_*_all.deb"
+directory node[:statsd][:log_dir] do
+  owner node[:statsd][:user]
+  group node[:statsd][:group]
+  mode 0755
+  action :create
 end
 
 template "#{node[:statsd][:conf_dir]}/localConfig.js" do
@@ -62,32 +49,18 @@ template "#{node[:statsd][:conf_dir]}/localConfig.js" do
     :graphitePort => node[:statsd][:graphite_port],
     :graphiteHost => node[:statsd][:graphite_host]
   )
-
   notifies :restart, "service[statsd]"
-end
-
-template "/usr/share/statsd/scripts/start" do
-  source "upstart.start.erb"
-  mode 0755
-  variables(
-    :logdir => node[:statsd][:log_dir],
-    :confdir => node[:statsd][:conf_dir]
-  )
 end
 
 template "/etc/init/statsd.conf" do
   source "upstart.conf.erb"
   mode 0644
   variables(
-    :user => node[:statsd][:user]
+    :user => node[:statsd][:user],
+    :basedir => node[:statsd][:base_dir],
+    :logdir => node[:statsd][:log_dir],
+    :confdir => node[:statsd][:conf_dir]
   )
-end
-
-directory node[:statsd][:log_dir] do
-  owner node[:statsd][:user]
-  group node[:statsd][:group]
-  mode 0755
-  action :create
 end
 
 service "statsd" do
