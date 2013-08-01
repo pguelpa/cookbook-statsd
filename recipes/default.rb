@@ -41,6 +41,13 @@ directory node[:statsd][:log_dir] do
   action :create
 end
 
+directory node[:statsd][:conf_dir] do
+  owner node[:statsd][:user]
+  group node[:statsd][:group]
+  mode 0755
+  action :create
+end
+
 template "#{node[:statsd][:conf_dir]}/localConfig.js" do
   source "localConfig.js.erb"
   mode 0644
