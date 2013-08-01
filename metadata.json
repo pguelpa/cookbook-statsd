@@ -9,7 +9,6 @@
     "ubuntu": ">= 0.0.0"
   },
   "dependencies": {
-    "build-essential": ">= 0.0.0",
     "git": ">= 0.0.0"
   },
   "recommendations": {
@@ -28,5 +27,5 @@
   },
   "recipes": {
   },
-  "version": "0.1.0"
+  "version": "0.1.1"
 }
