@@ -22,8 +22,21 @@ include_recipe "git"
 
 package "nodejs"
 
+user node[:statsd][:user] do
+  comment node[:statsd][:user]
+  system true
+  shell "/bin/false"
+  action :create
+end
+
+git "/tmp/statsd" do
+  repository node[:statsd][:repo_url]
+  reference node[:statsd][:branch]
+  action :checkout
+end
+
 execute "checkout statsd" do
-  command "git clone git://github.com/etsy/statsd"
+  command "git clone git@github.com:etsy/statsd.git"
   creates "/tmp/statsd"
   cwd "/tmp"
 end
@@ -32,17 +45,17 @@ package "debhelper"
 
 execute "build debian package" do
   command "dpkg-buildpackage -us -uc"
-  creates "/tmp/statsd_0.0.1_all.deb"
+  creates "/tmp/statsd_*_all.deb"
   cwd "/tmp/statsd"
 end
 
 dpkg_package "statsd" do
   action :install
-  source "/tmp/statsd_0.0.1_all.deb"
+  source "/tmp/statsd_*_all.deb"
 end
 
-template "/etc/statsd/rdioConfig.js" do
-  source "rdioConfig.js.erb"
+template "#{node[:statsd][:conf_dir]}/localConfig.js" do
+  source "localConfig.js.erb"
   mode 0644
   variables(
     :port => node[:statsd][:port],
@@ -53,20 +66,28 @@ template "/etc/statsd/rdioConfig.js" do
   notifies :restart, "service[statsd]"
 end
 
-cookbook_file "/usr/share/statsd/scripts/start" do
-  source "upstart.start"
+template "/usr/share/statsd/scripts/start" do
+  source "upstart.start.erb"
   mode 0755
+  variables(
+    :logdir => node[:statsd][:log_dir],
+    :confdir => node[:statsd][:conf_dir]
+  )
 end
 
-cookbook_file "/etc/init/statsd.conf" do
-  source "upstart.conf"
+template "/etc/init/statsd.conf" do
+  source "upstart.conf.erb"
   mode 0644
+  variables(
+    :user => node[:statsd][:user]
+  )
 end
 
-user "statsd" do
-  comment "statsd"
-  system true
-  shell "/bin/false"
+directory node[:statsd][:log_dir] do
+  owner node[:statsd][:user]
+  group node[:statsd][:group]
+  mode 0755
+  action :create
 end
 
 service "statsd" do

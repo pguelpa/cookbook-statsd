@@ -1,5 +1,5 @@
 description "statsd"
-author      "rdio"
+author      "dan@shopkeep.com"
 
 start on startup
 stop on shutdown
@@ -7,6 +7,5 @@ stop on shutdown
 script
     # We found $HOME is needed. Without it, we ran into problems
     export HOME="/root"
-
-    exec sudo -u statsd /usr/share/statsd/scripts/start
+    exec sudo -u <%= @user => /usr/share/statsd/scripts/start
 end script
