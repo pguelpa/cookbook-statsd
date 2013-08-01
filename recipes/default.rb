@@ -71,5 +71,7 @@ template "/etc/init/statsd.conf" do
 end
 
 service "statsd" do
+  provider Chef::Provider::Service::Upstart
+  supports :start => true, :status => true, :restart => true
   action [ :enable, :start ]
 end
