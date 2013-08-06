@@ -7,5 +7,5 @@ stop on shutdown
 script
     # We found $HOME is needed. Without it, we ran into problems
     export HOME="/root"
-    exec sudo -u <%= @user %> node <%= @basedir %>/stats.js <%= @confdir %>/localConfig.js 2>&1 >> <%= @logdir %>
+    exec sudo -u <%= @user %> node <%= @basedir %>/stats.js <%= @confdir %>/localConfig.js 2>&1 >> <%= @logdir %>/statsd.log
 end script
