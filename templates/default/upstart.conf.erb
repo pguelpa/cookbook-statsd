@@ -9,3 +9,12 @@ script
     export HOME="/root"
     exec sudo -u <%= @user %> node <%= @basedir %>/stats.js <%= @confdir %>/localConfig.js 2>&1 >> <%= @logdir %>/statsd.log
 end script
+
+post-start script
+	PID=`status statsd | egrep -oi '([0-9]+)$' | head -n1`
+	echo $PID > /var/run/statsd.pid
+end script
+
+post-stop script
+	rm -f /var/run/statsd.pid
+end script
