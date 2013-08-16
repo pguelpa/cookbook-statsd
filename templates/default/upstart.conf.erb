@@ -12,9 +12,9 @@ end script
 
 post-start script
 	PID=`status statsd | egrep -oi '([0-9]+)$' | head -n1`
-	echo $PID > /var/run/statsd.pid
+	echo $PID > <%= @pid_file %>
 end script
 
 post-stop script
-	rm -f /var/run/statsd.pid
+	rm -f <%= @pid_file %>
 end script

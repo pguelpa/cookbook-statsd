@@ -66,7 +66,8 @@ template "/etc/init/statsd.conf" do
     :user => node[:statsd][:user],
     :basedir => node[:statsd][:base_dir],
     :logdir => node[:statsd][:log_dir],
-    :confdir => node[:statsd][:conf_dir]
+    :confdir => node[:statsd][:conf_dir],
+    :pid_file => node[:statsd][:pid_file]
   )
 end
 

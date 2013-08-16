@@ -5,6 +5,7 @@ default[:statsd][:graphite_host] = "localhost"
 default[:statsd][:base_dir] = "/opt/statsd"
 default[:statsd][:log_dir] = "/var/log/statsd"
 default[:statsd][:conf_dir] = "/etc/statsd"
+default[:statsd][:pid_file] = "/var/run/statsd.pid"
 
 default[:statsd][:repo_url] = "https://github.com/etsy/statsd.git"
 default[:statsd][:repo_branch] = "master"
