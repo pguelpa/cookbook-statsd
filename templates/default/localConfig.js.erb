@@ -1,5 +1,7 @@
-{
-graphitePort: <%= @graphitePort %>
-, graphiteHost: "<%= @graphiteHost %>"
-, port: <%= @port %>
-}
+<%= JSON.generate(
+  @config.merge({
+    graphitePort: @graphitePort,
+    graphiteHost: @graphiteHost,
+    port: @port
+  })
+) %>

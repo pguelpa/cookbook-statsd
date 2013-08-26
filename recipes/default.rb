@@ -54,7 +54,8 @@ template "#{node[:statsd][:conf_dir]}/localConfig.js" do
   variables(
     :port => node[:statsd][:port],
     :graphitePort => node[:statsd][:graphite_port],
-    :graphiteHost => node[:statsd][:graphite_host]
+    :graphiteHost => node[:statsd][:graphite_host],
+    :config => node[:statsd][:config]
   )
   notifies :restart, "service[statsd]"
 end
